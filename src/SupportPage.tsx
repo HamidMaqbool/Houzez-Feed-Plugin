@@ -6,9 +6,14 @@ import { API_CONFIG } from './config';
 
 interface SupportPageProps {
   onBack: () => void;
+  initialTicketData?: {
+    subject: string;
+    description: string;
+    category: string;
+  };
 }
 
-export default function SupportPage({ onBack }: SupportPageProps) {
+export default function SupportPage({ onBack, initialTicketData }: SupportPageProps) {
   const [tickets, setTickets] = useState<SupportTicket[]>(() => [
     {
       id: 'TKT-1024',
@@ -54,7 +59,7 @@ export default function SupportPage({ onBack }: SupportPageProps) {
   ]);
 
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
-  const [isNewTicketModalOpen, setIsNewTicketModalOpen] = useState(false);
+  const [isNewTicketModalOpen, setIsNewTicketModalOpen] = useState(!!initialTicketData);
   const [replyText, setReplyText] = useState('');
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [viewingImage, setViewingImage] = useState<string | null>(null);
@@ -308,16 +313,23 @@ export default function SupportPage({ onBack }: SupportPageProps) {
               <form onSubmit={handleCreateTicket} className="nx-modal-body">
                 <div className="nx-form-group">
                   <label>Subject</label>
-                  <input name="subject" type="text" placeholder="Brief summary of the issue" required />
+                  <input 
+                    name="subject" 
+                    type="text" 
+                    placeholder="Brief summary of the issue" 
+                    defaultValue={initialTicketData?.subject}
+                    required 
+                  />
                 </div>
                 <div className="nx-form-row">
                   <div className="nx-form-group">
                     <label>Category</label>
-                    <select name="category">
+                    <select name="category" defaultValue={initialTicketData?.category || 'Technical'}>
                       <option>Technical</option>
                       <option>Billing</option>
                       <option>Account</option>
                       <option>Feature Request</option>
+                      <option>Custom Development</option>
                     </select>
                   </div>
                   <div className="nx-form-group">
@@ -342,7 +354,13 @@ export default function SupportPage({ onBack }: SupportPageProps) {
                 </div>
                 <div className="nx-form-group">
                   <label>Description</label>
-                  <textarea name="description" placeholder="Describe your issue in detail..." required rows={5} />
+                  <textarea 
+                    name="description" 
+                    placeholder="Describe your issue in detail..." 
+                    defaultValue={initialTicketData?.description}
+                    required 
+                    rows={5} 
+                  />
                 </div>
                 <div className="nx-modal-footer">
                   <button type="button" onClick={() => setIsNewTicketModalOpen(false)} className="nx-btn nx-btn-ghost">Cancel</button>

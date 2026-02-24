@@ -29,6 +29,8 @@ export interface CompanyAPI {
   logo: string;
   description: string;
   category: string;
+  tags: string[];
+  compatibility: string;
   version: string;
   availableVersions: string[];
   status: APIStatus;

@@ -1452,10 +1452,108 @@
   color: var(--nx-indigo-600);
 }
 
-.nx-app-root .nx-action-btn-top.nx-active {
-  background-color: var(--nx-indigo-50);
-  border-color: var(--nx-indigo-200);
+.nx-app-root .nx-action-btn-top.nx-prominent {
+  background-color: var(--nx-indigo-600);
+  color: var(--nx-white);
+  border-color: var(--nx-indigo-700);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.nx-app-root .nx-action-btn-top.nx-prominent:hover {
+  background-color: var(--nx-indigo-700);
+  transform: translateY(-1px);
+}
+
+.nx-app-root .nx-action-btn-top.nx-prominent .nx-unread-dot {
+  border-color: var(--nx-indigo-600);
+}
+
+/* Tags Filter */
+.nx-app-root .nx-tags-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.nx-app-root .nx-tag-pill {
+  padding: 6px 14px;
+  background-color: var(--nx-white);
+  border: 1px solid var(--nx-slate-200);
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--nx-slate-600);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: capitalize;
+}
+
+.nx-app-root .nx-tag-pill:hover {
+  border-color: var(--nx-indigo-300);
   color: var(--nx-indigo-600);
+}
+
+.nx-app-root .nx-tag-pill.nx-active {
+  background-color: var(--nx-indigo-600);
+  color: var(--nx-white);
+  border-color: var(--nx-indigo-600);
+}
+
+/* Request Card */
+.nx-app-root .nx-request-card {
+  border: 2px dashed var(--nx-slate-300);
+  background-color: var(--nx-slate-50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  min-height: 280px;
+}
+
+.nx-app-root .nx-request-card:hover {
+  border-color: var(--nx-indigo-400);
+  background-color: var(--nx-indigo-50/30);
+  transform: translateY(-4px);
+}
+
+.nx-app-root .nx-request-content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.nx-app-root .nx-request-icon {
+  width: 64px;
+  height: 64px;
+  background-color: var(--nx-white);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--nx-slate-400);
+  box-shadow: var(--nx-shadow-sm);
+}
+
+.nx-app-root .nx-request-card:hover .nx-request-icon {
+  color: var(--nx-indigo-600);
+  transform: scale(1.1);
+}
+
+.nx-app-root .nx-request-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--nx-slate-900);
+}
+
+.nx-app-root .nx-request-card p {
+  font-size: 14px;
+  color: var(--nx-slate-500);
+  line-height: 1.5;
 }
 
 .nx-app-root .nx-brand-logo {
@@ -1590,11 +1688,12 @@
   background-color: var(--nx-white);
   border: 1px solid var(--nx-slate-200);
   border-radius: 28px;
-  padding: 28px;
+  padding: 24px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   position: relative;
+  overflow: hidden;
 }
 
 .nx-app-root .nx-api-card:hover {
@@ -1603,46 +1702,111 @@
   border-color: var(--nx-indigo-100);
 }
 
-.nx-app-root .nx-card-header {
+.nx-app-root .nx-card-image-container {
+  position: relative;
+  margin: -24px -24px 20px -24px;
+  height: 160px;
+  overflow: hidden;
+  background-color: var(--nx-slate-100);
+}
+
+.nx-app-root .nx-api-logo-full {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nx-app-root .nx-api-card:hover .nx-api-logo-full {
+  transform: scale(1.08);
+}
+
+.nx-app-root .nx-image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 16px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 20px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, transparent 50%);
+  z-index: 10;
 }
 
-.nx-app-root .nx-logo-wrapper {
+.nx-app-root .nx-overlay-actions {
   position: relative;
 }
 
-.nx-app-root .nx-api-logo {
-  width: 120px;
-  height: 120px;
-  border-radius: 24px;
-  object-fit: cover;
-  border: 1px solid var(--nx-slate-100);
-  box-shadow: var(--nx-shadow-lg);
-  margin-bottom: 8px;
-}
-
-.nx-app-root .nx-status-badge {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  width: 24px;
-  height: 24px;
-  background-color: var(--nx-emerald-500);
-  border-radius: 50%;
-  border: 3px solid var(--nx-white);
+.nx-app-root .nx-more-button-overlay {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--nx-white);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nx-app-root .nx-more-button-overlay:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
+}
+
+.nx-app-root .nx-status-badge-overlay {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background-color: var(--nx-emerald-500);
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  z-index: 11;
+}
+
+.nx-app-root .nx-body-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
 }
 
 .nx-app-root .nx-card-meta {
   display: flex;
+  align-items: center;
   gap: 10px;
   position: relative;
+}
+
+.nx-app-root .nx-tags-list {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.nx-app-root .nx-tag-micro {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .nx-app-root .nx-category-tag {
@@ -2333,4 +2497,25 @@
   height: 1em;
   stroke: currentColor;
   fill: none;
+}
+
+/* Overlaid Tag Styles */
+.nx-app-root .nx-image-overlay .nx-tags-list {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.nx-app-root .nx-image-overlay .nx-tag-micro {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 8px;
+  letter-spacing: 0.03em;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }

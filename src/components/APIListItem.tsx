@@ -57,6 +57,11 @@ export function APIListItem({
       <div className="nx-list-content">
         <div className="nx-list-title-row">
           <h3>{api.name}</h3>
+          <div className="nx-tags-list">
+            {api.tags?.map(tag => (
+              <span key={tag} className="nx-tag-micro">{tag}</span>
+            ))}
+          </div>
           <span className="nx-category-tag">{api.category}</span>
         </div>
         <p className="nx-list-description">{api.description}</p>

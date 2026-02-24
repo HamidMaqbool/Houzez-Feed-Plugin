@@ -40,40 +40,47 @@ export function APICard({
       exit={{ opacity: 0, scale: 0.95 }}
       className="nx-api-card"
     >
-      <div className="nx-card-header">
-        <div className="nx-logo-wrapper">
-          <img 
-            src={api.logo} 
-            alt={api.name} 
-            className="nx-api-logo"
-            referrerPolicy="no-referrer"
-          />
-          {api.status === APIStatus.ACTIVE && (
-            <div className="nx-status-badge">
-              <Icon name="check" size={12} />
-            </div>
-          )}
+      <div className="nx-card-image-container">
+        <img 
+          src={api.logo} 
+          alt={api.name} 
+          className="nx-api-logo-full"
+          referrerPolicy="no-referrer"
+        />
+        <div className="nx-image-overlay">
+          <div className="nx-tags-list">
+            {api.tags?.slice(0, 2).map(tag => (
+              <span key={tag} className="nx-tag-micro">{tag}</span>
+            ))}
+          </div>
+          <div className="nx-overlay-actions">
+            <button onClick={onToggleDropdown} className="nx-more-button-overlay">
+              <Icon name="more" size={18} />
+            </button>
+            <DropdownMenu 
+              api={api} 
+              isOpen={isDropdownOpen} 
+              onClose={onCloseDropdown} 
+              onOpenSettings={onOpenSettings}
+              onOpenAnalytics={onOpenAnalytics}
+              onOpenLogs={onOpenLogs}
+              onOpenQueue={onOpenQueue}
+              onUninstall={onUninstall}
+            />
+          </div>
         </div>
-        <div className="nx-card-meta">
-          <span className="nx-category-tag">{api.category}</span>
-          <button onClick={onToggleDropdown} className="nx-more-button">
-            <Icon name="more" size={18} />
-          </button>
-          <DropdownMenu 
-            api={api} 
-            isOpen={isDropdownOpen} 
-            onClose={onCloseDropdown} 
-            onOpenSettings={onOpenSettings}
-            onOpenAnalytics={onOpenAnalytics}
-            onOpenLogs={onOpenLogs}
-            onOpenQueue={onOpenQueue}
-            onUninstall={onUninstall}
-          />
-        </div>
+        {api.status === APIStatus.ACTIVE && (
+          <div className="nx-status-badge-overlay">
+            <Icon name="check" size={12} />
+          </div>
+        )}
       </div>
 
       <div className="nx-card-body">
-        <h3>{api.name}</h3>
+        <div className="nx-body-header">
+          <h3>{api.name}</h3>
+          <span className="nx-category-tag">{api.category}</span>
+        </div>
         <p>{api.description}</p>
       </div>
 

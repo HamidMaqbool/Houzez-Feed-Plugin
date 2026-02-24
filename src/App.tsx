@@ -27,6 +27,8 @@ export default function App() {
   const [apiToDelete, setApiToDelete] = useState<CompanyAPI | null>(null);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [showGeneralSettings, setShowGeneralSettings] = useState(false);
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [supportTicketPreFill, setSupportTicketPreFill] = useState<{subject: string, description: string, category: string} | null>(null);
   const [hasNewSupportResponse, setHasNewSupportResponse] = useState(true); // Mocking a new response
   const [notifications, setNotifications] = useState<{id: string, message: string, type: 'warning' | 'info'}[]>([
     { id: '1', message: 'System maintenance scheduled for Sunday at 02:00 AM UTC.', type: 'info' },
@@ -77,10 +79,23 @@ export default function App() {
     setSelectedApiForSettings(null);
   };
 
-  const filteredApis = apis.filter(api => 
-    api.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    api.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const allTags = Array.from(new Set(apis.flatMap(api => api.tags || [])));
+
+  const filteredApis = apis.filter(api => {
+    const matchesSearch = api.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         api.category.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesTag = !selectedTag || (api.tags && api.tags.includes(selectedTag));
+    return matchesSearch && matchesTag;
+  });
+
+  const handleRequestCustom = () => {
+    setSupportTicketPreFill({
+      subject: 'Custom Plugin/API Request',
+      description: 'I am looking for a custom integration for: \n\n[Please describe the service or functionality you need]',
+      category: 'Custom Development'
+    });
+    setCurrentPage('support');
+  };
 
   return (
     <div className="nx-app-root">
@@ -143,28 +158,39 @@ export default function App() {
                         <code className="nx-key-value">MK-8829-XPL-001</code>
                       </div>
                       <button 
+                        onClick={handleRequestCustom}
+                        className="nx-action-btn-top nx-custom-request-btn"
+                        title="Request Custom Integration"
+                      >
+                        <Icon name="plus" size={18} />
+                        <span>Request Custom</span>
+                      </button>
+                      <button 
                         onClick={() => {
                           setCurrentPage('support');
                           setHasNewSupportResponse(false);
+                          setSupportTicketPreFill(null);
                         }}
-                        className="nx-action-btn-top nx-support-btn"
+                        className="nx-action-btn-top nx-support-btn nx-prominent"
                         title="Support Center"
                       >
                         <div className="nx-icon-wrapper">
                           <motion.div
                             animate={hasNewSupportResponse ? {
-                              scale: [1, 1.2, 1],
-                              rotate: [0, 10, -10, 0]
+                              scale: [1, 1.15, 1],
                             } : {}}
                             transition={hasNewSupportResponse ? {
-                              duration: 0.5,
+                              duration: 1.5,
                               repeat: Infinity,
-                              repeatDelay: 2
                             } : {}}
                           >
                             <Icon name="bell" size={18} />
                           </motion.div>
-                          {hasNewSupportResponse && <span className="nx-unread-dot" />}
+                          {hasNewSupportResponse && (
+                            <span className="nx-notification-badge">
+                              1
+                            </span>
+                          )}
                         </div>
                         <span>Support</span>
                       </button>
@@ -209,6 +235,24 @@ export default function App() {
                       List
                     </button>
                   </div>
+                </div>
+
+                <div className="nx-tags-filter">
+                  <button 
+                    onClick={() => setSelectedTag(null)}
+                    className={`nx-tag-pill ${selectedTag === null ? 'nx-active' : ''}`}
+                  >
+                    All
+                  </button>
+                  {allTags.map(tag => (
+                    <button 
+                      key={tag}
+                      onClick={() => setSelectedTag(tag)}
+                      className={`nx-tag-pill ${selectedTag === tag ? 'nx-active' : ''}`}
+                    >
+                      {tag}
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -272,6 +316,25 @@ export default function App() {
                         />
                       )
                     ))}
+                    
+                    <motion.div 
+                      layout
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className={viewMode === 'grid' ? "nx-api-card nx-request-card" : "nx-api-list-item nx-request-card"}
+                      onClick={handleRequestCustom}
+                    >
+                      <div className="nx-request-content">
+                        <div className="nx-request-icon">
+                          <Icon name="plus" size={32} />
+                        </div>
+                        <h3>Need something else?</h3>
+                        <p>Request a custom plugin or API integration specifically for your needs.</p>
+                        <button className="nx-btn nx-btn-primary">
+                          Request Custom
+                        </button>
+                      </div>
+                    </motion.div>
                   </AnimatePresence>
                 </div>
                 
@@ -308,7 +371,13 @@ export default function App() {
               />
             )
           ) : (
-            <SupportPage onBack={() => setCurrentPage('marketplace')} />
+            <SupportPage 
+              onBack={() => {
+                setCurrentPage('marketplace');
+                setSupportTicketPreFill(null);
+              }} 
+              initialTicketData={supportTicketPreFill || undefined}
+            />
           )}
         </AnimatePresence>
       </main>
