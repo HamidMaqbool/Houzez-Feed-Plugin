@@ -1,0 +1,84 @@
+export enum APIStatus {
+  IDLE = 'IDLE',
+  DOWNLOADING = 'DOWNLOADING',
+  DOWNLOADED = 'DOWNLOADED',
+  ACTIVE = 'ACTIVE',
+}
+
+export interface SettingField {
+  key: string;
+  label: string;
+  type: 'text' | 'password' | 'number' | 'select' | 'toggle';
+  defaultValue: any;
+  helpText?: string;
+  instruction?: string;
+  icon?: string;
+  options?: string[]; // For select type
+}
+
+export interface SettingTab {
+  id: string;
+  label: string;
+  icon: string;
+  fields: SettingField[];
+}
+
+export interface CompanyAPI {
+  id: string;
+  name: string;
+  logo: string;
+  description: string;
+  category: string;
+  version: string;
+  availableVersions: string[];
+  status: APIStatus;
+  settingsConfig: SettingTab[];
+  settings?: Record<string, any>;
+}
+
+export interface LogEntry {
+  id: string;
+  timestamp: string;
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  endpoint: string;
+  status: number;
+  duration: number;
+  message: string;
+  payload?: any;
+}
+
+export interface QueueItem {
+  id: string;
+  timestamp: string;
+  taskName: string;
+  priority: 'Low' | 'Medium' | 'High';
+  status: 'Pending' | 'Processing' | 'Failed' | 'Retrying';
+  attempts: number;
+  payload?: any;
+}
+
+export interface SupportAttachment {
+  id: string;
+  name: string;
+  url: string;
+  type: string;
+}
+
+export interface SupportMessage {
+  id: string;
+  sender: 'user' | 'agent';
+  text: string;
+  timestamp: string;
+  attachments?: SupportAttachment[];
+}
+
+export interface SupportTicket {
+  id: string;
+  subject: string;
+  status: 'Open' | 'In Progress' | 'Resolved' | 'Closed';
+  priority: 'Low' | 'Medium' | 'High';
+  category: string;
+  createdAt: string;
+  updatedAt: string;
+  messages: SupportMessage[];
+}
