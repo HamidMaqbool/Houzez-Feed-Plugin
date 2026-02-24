@@ -30,7 +30,7 @@ export function GeneralSettings({ isOpen, onClose }: GeneralSettingsProps) {
           <div className="nx-settings-section">
             <label className="nx-section-label">Master API Key</label>
             <div className="nx-key-display">
-              <span className="nx-key-masked">••••••••••••••••••••••••</span>
+              <code className="nx-key-unmasked">MK-8829-XPL-001</code>
               <button className="nx-btn-icon" title="Copy Key">
                 <Icon name="save" size={14} />
               </button>

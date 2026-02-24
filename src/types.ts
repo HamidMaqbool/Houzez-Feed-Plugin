@@ -78,6 +78,7 @@ export interface SupportTicket {
   status: 'Open' | 'In Progress' | 'Resolved' | 'Closed';
   priority: 'Low' | 'Medium' | 'High';
   category: string;
+  apiId?: string;
   createdAt: string;
   updatedAt: string;
   messages: SupportMessage[];

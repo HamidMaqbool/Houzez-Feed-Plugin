@@ -27,6 +27,15 @@ export default function App() {
   const [apiToDelete, setApiToDelete] = useState<CompanyAPI | null>(null);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [showGeneralSettings, setShowGeneralSettings] = useState(false);
+  const [hasNewSupportResponse, setHasNewSupportResponse] = useState(true); // Mocking a new response
+  const [notifications, setNotifications] = useState<{id: string, message: string, type: 'warning' | 'info'}[]>([
+    { id: '1', message: 'System maintenance scheduled for Sunday at 02:00 AM UTC.', type: 'info' },
+    { id: '2', message: 'Your Stripe Connect API key is expiring in 3 days.', type: 'warning' }
+  ]);
+
+  const dismissNotification = (id: string) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
 
   const handleDownload = (id: string) => {
     if (!isLicensed) {
@@ -88,6 +97,29 @@ export default function App() {
       </AnimatePresence>
       
       <main className="nx-main-content">
+        <AnimatePresence>
+          {notifications.length > 0 && currentPage === 'marketplace' && (
+            <motion.div 
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="nx-notifications-container"
+            >
+              {notifications.map(n => (
+                <div key={n.id} className={`nx-notification-banner nx-notification-${n.type}`}>
+                  <div className="nx-notification-content">
+                    <Icon name={n.type === 'warning' ? 'shield' : 'bell'} size={16} />
+                    <span>{n.message}</span>
+                  </div>
+                  <button onClick={() => dismissNotification(n.id)} className="nx-notification-close">
+                    <Icon name="x" size={14} />
+                  </button>
+                </div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <AnimatePresence mode="wait">
           {currentPage === 'marketplace' ? (
             <motion.div 
@@ -100,8 +132,51 @@ export default function App() {
               <div className="nx-page-header">
                 <div className="nx-page-title">
                   <div className="nx-brand-row">
-                    <Icon name="zap" size={28} className="nx-brand-logo" />
-                    <h1>API Marketplace</h1>
+                    <div className="nx-brand-left">
+                      <Icon name="zap" size={28} className="nx-brand-logo" />
+                      <h1>API Marketplace</h1>
+                    </div>
+                    <div className="nx-brand-actions">
+                      <div className="nx-master-key-badge">
+                        <Icon name="key" size={14} />
+                        <span className="nx-key-label">Master Key:</span>
+                        <code className="nx-key-value">MK-8829-XPL-001</code>
+                      </div>
+                      <button 
+                        onClick={() => {
+                          setCurrentPage('support');
+                          setHasNewSupportResponse(false);
+                        }}
+                        className="nx-action-btn-top nx-support-btn"
+                        title="Support Center"
+                      >
+                        <div className="nx-icon-wrapper">
+                          <motion.div
+                            animate={hasNewSupportResponse ? {
+                              scale: [1, 1.2, 1],
+                              rotate: [0, 10, -10, 0]
+                            } : {}}
+                            transition={hasNewSupportResponse ? {
+                              duration: 0.5,
+                              repeat: Infinity,
+                              repeatDelay: 2
+                            } : {}}
+                          >
+                            <Icon name="bell" size={18} />
+                          </motion.div>
+                          {hasNewSupportResponse && <span className="nx-unread-dot" />}
+                        </div>
+                        <span>Support</span>
+                      </button>
+                      <button 
+                        onClick={() => setShowGeneralSettings(!showGeneralSettings)}
+                        className={`nx-action-btn-top ${showGeneralSettings ? 'nx-active' : ''}`}
+                        title="General Settings"
+                      >
+                        <Icon name="settings" size={18} />
+                        <span>Settings</span>
+                      </button>
+                    </div>
                   </div>
                   <p>Discover and manage your enterprise integrations with ease.</p>
                 </div>
@@ -120,40 +195,18 @@ export default function App() {
                   
                   <div className="nx-view-controls">
                     <button 
-                      onClick={() => setCurrentPage('analytics')}
-                      className="nx-view-button"
-                      title="Analytics"
-                    >
-                      <Icon name="activity" size={18} />
-                      Analytics
-                    </button>
-                    <button 
-                      onClick={() => setCurrentPage('support')}
-                      className="nx-view-button"
-                      title="Support Center"
-                    >
-                      <Icon name="bell" size={18} />
-                      Support
-                    </button>
-                    <div className="nx-control-divider" />
-                    <button 
                       onClick={() => setViewMode('grid')}
                       className={`nx-view-button ${viewMode === 'grid' ? 'nx-active' : ''}`}
                     >
+                      <Icon name="grid" size={18} />
                       Grid
                     </button>
                     <button 
                       onClick={() => setViewMode('list')}
                       className={`nx-view-button ${viewMode === 'list' ? 'nx-active' : ''}`}
                     >
+                      <Icon name="list" size={18} />
                       List
-                    </button>
-                    <button 
-                      onClick={() => setShowGeneralSettings(!showGeneralSettings)}
-                      className={`nx-view-button ${showGeneralSettings ? 'nx-active' : ''}`}
-                      title="General Settings"
-                    >
-                      <Icon name="settings" size={18} />
                     </button>
                   </div>
                 </div>

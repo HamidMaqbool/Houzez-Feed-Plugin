@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { SupportTicket, SupportMessage, SupportAttachment } from './types';
 import { Icon } from './components/Icon';
+import { API_CONFIG } from './config';
 
 interface SupportPageProps {
   onBack: () => void;
@@ -15,6 +16,7 @@ export default function SupportPage({ onBack }: SupportPageProps) {
       status: 'Open',
       priority: 'High',
       category: 'Technical',
+      apiId: '1',
       createdAt: new Date(Date.now() - 86400000).toISOString(),
       updatedAt: new Date().toISOString(),
       messages: [
@@ -54,19 +56,40 @@ export default function SupportPage({ onBack }: SupportPageProps) {
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   const [isNewTicketModalOpen, setIsNewTicketModalOpen] = useState(false);
   const [replyText, setReplyText] = useState('');
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [viewingImage, setViewingImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const selectedTicket = useMemo(() => 
     tickets.find(t => t.id === selectedTicketId), 
   [tickets, selectedTicketId]);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setSelectedFiles(prev => [...prev, ...Array.from(e.target.files!)]);
+    }
+  };
+
+  const removeFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleSendReply = () => {
-    if (!replyText.trim() || !selectedTicketId) return;
+    if ((!replyText.trim() && selectedFiles.length === 0) || !selectedTicketId) return;
+
+    const attachments: SupportAttachment[] = selectedFiles.map(file => ({
+      id: `att-${Date.now()}-${Math.random()}`,
+      name: file.name,
+      url: URL.createObjectURL(file),
+      type: file.type
+    }));
 
     const newMessage: SupportMessage = {
       id: `msg-${Date.now()}`,
       sender: 'user',
       text: replyText,
       timestamp: new Date().toISOString(),
+      attachments: attachments.length > 0 ? attachments : undefined
     };
 
     setTickets(prev => prev.map(t => 
@@ -75,6 +98,7 @@ export default function SupportPage({ onBack }: SupportPageProps) {
         : t
     ));
     setReplyText('');
+    setSelectedFiles([]);
   };
 
   const handleCreateTicket = (e: React.FormEvent<HTMLFormElement>) => {
@@ -85,6 +109,7 @@ export default function SupportPage({ onBack }: SupportPageProps) {
       subject: formData.get('subject') as string,
       category: formData.get('category') as string,
       priority: formData.get('priority') as SupportTicket['priority'],
+      apiId: formData.get('apiId') as string,
       status: 'Open',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -101,15 +126,24 @@ export default function SupportPage({ onBack }: SupportPageProps) {
     setIsNewTicketModalOpen(false);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendReply();
+    }
+  };
+
   return (
     <div className="nx-support-page">
       <div className="nx-page-header nx-support-header">
-        <button onClick={onBack} className="nx-back-button">
-          <Icon name="arrow-left" size={18} />
-          Back to Marketplace
-        </button>
-        <div className="nx-header-row">
+        <div className="nx-header-left">
+          <button onClick={onBack} className="nx-back-button">
+            <Icon name="arrow-left" size={18} />
+            Back to Marketplace
+          </button>
           <h1>Support Center</h1>
+        </div>
+        <div className="nx-header-right">
           <button onClick={() => setIsNewTicketModalOpen(true)} className="nx-btn nx-btn-primary">
             <Icon name="plus" size={18} />
             New Ticket
@@ -155,6 +189,11 @@ export default function SupportPage({ onBack }: SupportPageProps) {
                     <span className={`nx-priority-tag nx-priority-${selectedTicket.priority.toLowerCase()}`}>
                       {selectedTicket.priority} Priority
                     </span>
+                    {selectedTicket.apiId && (
+                      <span className="nx-api-tag">
+                        API: {API_CONFIG.find(a => a.id === selectedTicket.apiId)?.name || 'Unknown'}
+                      </span>
+                    )}
                     <span>Created on {new Date(selectedTicket.createdAt).toLocaleString()}</span>
                   </div>
                 </div>
@@ -168,25 +207,68 @@ export default function SupportPage({ onBack }: SupportPageProps) {
                       <span className="nx-message-time">{new Date(msg.timestamp).toLocaleTimeString()}</span>
                     </div>
                     <p className="nx-message-text">{msg.text}</p>
+                    {msg.attachments && msg.attachments.length > 0 && (
+                      <div className="nx-message-attachments">
+                        {msg.attachments.map(att => (
+                          <div key={att.id} className="nx-attachment-preview">
+                            {att.type.startsWith('image/') ? (
+                              <img 
+                                src={att.url} 
+                                alt={att.name} 
+                                className="nx-attachment-image" 
+                                onClick={() => setViewingImage(att.url)}
+                                referrerPolicy="no-referrer"
+                              />
+                            ) : (
+                              <div className="nx-attachment-file">
+                                <Icon name="external" size={16} />
+                                <span>{att.name}</span>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
 
               {selectedTicket.status !== 'Closed' && (
                 <div className="nx-reply-box">
-                  <textarea 
-                    placeholder="Type your reply here..."
-                    value={replyText}
-                    onChange={(e) => setReplyText(e.target.value)}
-                  />
-                  <div className="nx-reply-actions">
-                    <button className="nx-btn-ghost">
-                      <Icon name="external" size={16} />
-                      Attach File
-                    </button>
-                    <button onClick={handleSendReply} className="nx-btn nx-btn-primary">
-                      Send Reply
-                    </button>
+                  {selectedFiles.length > 0 && (
+                    <div className="nx-selected-files">
+                      {selectedFiles.map((file, idx) => (
+                        <div key={idx} className="nx-selected-file-tag">
+                          <span>{file.name}</span>
+                          <button onClick={() => removeFile(idx)} className="nx-remove-file">
+                            <Icon name="x" size={12} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div className="nx-compact-reply">
+                    <textarea 
+                      placeholder="Type your reply here... (Press Enter to send)"
+                      value={replyText}
+                      onChange={(e) => setReplyText(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                    />
+                    <div className="nx-compact-actions">
+                      <button onClick={() => fileInputRef.current?.click()} className="nx-action-btn" title="Attach File">
+                        <Icon name="external" size={18} />
+                      </button>
+                      <input 
+                        type="file" 
+                        ref={fileInputRef} 
+                        style={{ display: 'none' }} 
+                        multiple 
+                        onChange={handleFileChange}
+                      />
+                      <button onClick={handleSendReply} className="nx-send-btn" title="Send Reply">
+                        <Icon name="save" size={18} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -239,6 +321,17 @@ export default function SupportPage({ onBack }: SupportPageProps) {
                     </select>
                   </div>
                   <div className="nx-form-group">
+                    <label>Related API</label>
+                    <select name="apiId">
+                      <option value="">None / General</option>
+                      {API_CONFIG.map(api => (
+                        <option key={api.id} value={api.id}>{api.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div className="nx-form-row">
+                  <div className="nx-form-group">
                     <label>Priority</label>
                     <select name="priority">
                       <option value="Low">Low</option>
@@ -256,6 +349,29 @@ export default function SupportPage({ onBack }: SupportPageProps) {
                   <button type="submit" className="nx-btn nx-btn-primary">Create Ticket</button>
                 </div>
               </form>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {viewingImage && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="nx-modal-overlay nx-lightbox"
+            onClick={() => setViewingImage(null)}
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="nx-lightbox-content"
+              onClick={e => e.stopPropagation()}
+            >
+              <img src={viewingImage} alt="Large view" className="nx-full-image" referrerPolicy="no-referrer" />
+              <button onClick={() => setViewingImage(null)} className="nx-lightbox-close">
+                <Icon name="x" size={32} />
+              </button>
             </motion.div>
           </motion.div>
         )}

@@ -343,10 +343,11 @@
   border: 1px solid var(--nx-slate-200);
 }
 
-.nx-app-root .nx-key-masked {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--nx-slate-600);
+.nx-app-root .nx-key-unmasked {
+  font-family: var(--nx-font-mono);
+  font-size: 13px;
+  color: var(--nx-indigo-600);
+  font-weight: 600;
   flex: 1;
 }
 
@@ -455,7 +456,130 @@
 
 .nx-app-root .nx-support-header {
   margin-bottom: 24px !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-end !important;
+  justify-content: space-between !important;
   gap: 16px !important;
+}
+
+.nx-app-root .nx-message-text {
+  line-height: 1.6;
+}
+
+.nx-app-root .nx-message-attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.nx-app-root .nx-attachment-preview {
+  max-width: 200px;
+  cursor: pointer;
+}
+
+.nx-app-root .nx-attachment-image {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.nx-app-root .nx-attachment-image:hover {
+  transform: scale(1.02);
+}
+
+.nx-app-root .nx-attachment-file {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: rgba(0,0,0,0.05);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.nx-app-root .nx-selected-files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.nx-app-root .nx-selected-file-tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  background-color: var(--nx-indigo-50);
+  color: var(--nx-indigo-700);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--nx-indigo-100);
+}
+
+.nx-app-root .nx-remove-file {
+  background: none;
+  border: none;
+  color: var(--nx-indigo-400);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nx-app-root .nx-remove-file:hover {
+  color: var(--nx-red-500);
+}
+
+.nx-app-root .nx-lightbox {
+  background-color: rgba(0,0,0,0.9);
+  backdrop-filter: blur(10px);
+  z-index: 200;
+}
+
+.nx-app-root .nx-lightbox-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+
+.nx-app-root .nx-full-image {
+  max-width: 100%;
+  max-height: 90vh;
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+.nx-app-root .nx-lightbox-close {
+  position: absolute;
+  top: -48px;
+  right: -48px;
+  background: none;
+  border: none;
+  color: var(--nx-white);
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.nx-app-root .nx-lightbox-close:hover {
+  opacity: 1;
+}
+
+.nx-app-root .nx-header-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+
+.nx-app-root .nx-header-right {
+  display: flex;
+  align-items: flex-end;
 }
 
 .nx-app-root .nx-header-row {
@@ -592,7 +716,29 @@
   gap: 16px;
   font-size: 13px;
   color: var(--nx-slate-500);
+  flex-wrap: wrap;
 }
+
+.nx-app-root .nx-api-tag {
+  background-color: var(--nx-slate-100);
+  color: var(--nx-slate-700);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.nx-app-root .nx-priority-tag {
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.nx-app-root .nx-priority-high { background-color: #fee2e2; color: #991b1b; }
+.nx-app-root .nx-priority-medium { background-color: #fef9c3; color: #854d0e; }
+.nx-app-root .nx-priority-low { background-color: #f1f5f9; color: #475569; }
 
 .nx-app-root .nx-messages-container {
   flex: 1;
@@ -637,26 +783,78 @@
 }
 
 .nx-app-root .nx-reply-box {
-  padding: 24px 32px;
+  padding: 16px 32px;
   background-color: var(--nx-white);
   border-top: 1px solid var(--nx-slate-100);
 }
 
-.nx-app-root .nx-reply-box textarea {
-  width: 100%;
-  min-height: 100px;
-  padding: 16px;
-  border-radius: 12px;
+.nx-app-root .nx-compact-reply {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  background-color: var(--nx-slate-50);
   border: 1px solid var(--nx-slate-200);
+  border-radius: 16px;
+  padding: 8px 12px;
+}
+
+.nx-app-root .nx-compact-reply textarea {
+  flex: 1;
+  min-height: 40px;
+  max-height: 120px;
+  padding: 8px;
+  border: none;
+  background: none;
   font-family: inherit;
   font-size: 14px;
   resize: none;
-  margin-bottom: 16px;
+  outline: none;
 }
 
-.nx-app-root .nx-reply-actions {
+.nx-app-root .nx-compact-actions {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 4px;
+}
+
+.nx-app-root .nx-action-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--nx-slate-400);
+  background: none;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nx-app-root .nx-action-btn:hover {
+  color: var(--nx-indigo-600);
+  background-color: var(--nx-white);
+}
+
+.nx-app-root .nx-send-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--nx-white);
+  background-color: var(--nx-indigo-600);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 8px rgba(79, 70, 229, 0.2);
+}
+
+.nx-app-root .nx-send-btn:hover {
+  background-color: var(--nx-indigo-700);
+  transform: translateY(-1px);
 }
 
 .nx-app-root .nx-empty-detail {
@@ -1115,8 +1313,149 @@
 .nx-app-root .nx-brand-row {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
   margin-bottom: 8px;
+}
+
+.nx-app-root .nx-brand-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nx-app-root .nx-brand-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.nx-app-root .nx-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nx-app-root .nx-unread-dot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  background-color: var(--nx-red-500);
+  border: 2px solid var(--nx-white);
+  border-radius: 50%;
+}
+
+/* Notifications */
+.nx-app-root .nx-notifications-container {
+  padding: 0 40px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nx-app-root .nx-notification-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.nx-app-root .nx-notification-info {
+  background-color: var(--nx-indigo-50);
+  color: var(--nx-indigo-700);
+  border: 1px solid var(--nx-indigo-100);
+}
+
+.nx-app-root .nx-notification-warning {
+  background-color: #fff7ed;
+  color: #9a3412;
+  border: 1px solid #ffedd5;
+}
+
+.nx-app-root .nx-notification-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nx-app-root .nx-notification-close {
+  background: none;
+  border: none;
+  color: currentColor;
+  opacity: 0.5;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.nx-app-root .nx-notification-close:hover {
+  opacity: 1;
+}
+
+.nx-app-root .nx-action-btn-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  height: 40px;
+  background-color: var(--nx-white);
+  border: 1px solid var(--nx-slate-200);
+  border-radius: 12px;
+  color: var(--nx-slate-600);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nx-app-root .nx-master-key-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  height: 40px;
+  background-color: var(--nx-slate-100);
+  border: 1px solid var(--nx-slate-200);
+  border-radius: 12px;
+  color: var(--nx-slate-600);
+  font-size: 13px;
+  margin-right: 8px;
+}
+
+.nx-app-root .nx-key-label {
+  font-weight: 600;
+  color: var(--nx-slate-500);
+}
+
+.nx-app-root .nx-key-value {
+  font-family: var(--nx-font-mono);
+  background-color: var(--nx-white);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--nx-indigo-600);
+  font-weight: 600;
+}
+
+.nx-app-root .nx-action-btn-top:hover {
+  background-color: var(--nx-slate-50);
+  border-color: var(--nx-indigo-200);
+  color: var(--nx-indigo-600);
+}
+
+.nx-app-root .nx-action-btn-top.nx-active {
+  background-color: var(--nx-indigo-50);
+  border-color: var(--nx-indigo-200);
+  color: var(--nx-indigo-600);
 }
 
 .nx-app-root .nx-brand-logo {
